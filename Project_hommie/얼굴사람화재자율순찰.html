@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>안녕, 호미</title>
+</head>
+<body>
+    <h1>안녕, 호미</h1>
+    
+    <!-- Video Stream -->
+    <img src="{{ url_for('video_feed') }}" width="640" height="480" loading="lazy">
+    <br><br>
+    
+    <!-- Register Face Form -->
+    <form method="POST" action="/register_face">
+        <label for="name">당신의 이름은?:</label>
+        <input type="text" id="name" name="name" required>
+        <button type="submit">얼굴 등록</button>
+    </form>
+    <br>
+    
+    <!-- Toggle Buttons -->
+    <button id="toggleFaceButton" onclick="toggleFeature('face')">가족을 등록하고 보호하세요</button>
+    <button id="toggleFireButton" onclick="toggleFeature('fire')">화재로부터 안전한 우리집</button>
+    <br><br>
+    
+    <!-- Start/Stop Patrol Buttons -->
+    <button id="startPatrolButton" onclick="startPatrol()">집지켜 호미</button>
+    <button id="stopPatrolButton" onclick="stopPatrol()" style="display:none;">순찰 중지</button>
+    
+    <div id="statusMessage" style="margin-top: 20px;"></div>
+
+    <script>
+        // Function to toggle features and update button text
+        function toggleFeature(feature) {
+            fetch('/toggle_' + feature)
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    updateButtonState(feature);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Function to dynamically update button text based on the feature state
+        function updateButtonState(feature) {
+            const featureButton = document.getElementById('toggle' + feature.charAt(0).toUpperCase() + feature.slice(1) + 'Button');
+            if (feature === 'face') {
+                featureButton.textContent = featureButton.textContent.includes("등록") ? "가족 보호 해제" : "가족 등록 및 보호";
+            } else if (feature === 'fire') {
+                featureButton.textContent = featureButton.textContent.includes("안전") ? "화재 감지 해제" : "화재 감지 활성화";
+            }
+        }
+
+        // Function to start patrol
+        function startPatrol() {
+            fetch('/start_patrol', { method: 'POST' })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    document.getElementById('statusMessage').innerText = data;
+                    document.getElementById('startPatrolButton').style.display = 'none';
+                    document.getElementById('stopPatrolButton').style.display = 'inline';
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Function to stop patrol
+        function stopPatrol() {
+            fetch('/stop_patrol', { method: 'POST' })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    document.getElementById('statusMessage').innerText = data;
+                    document.getElementById('startPatrolButton').style.display = 'inline';
+                    document.getElementById('stopPatrolButton').style.display = 'none';
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
+

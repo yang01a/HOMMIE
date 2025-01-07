@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>안녕, 호미</title>
+    <style>
+        /* 전체 페이지의 스타일 */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 20px; 
+
+        }
+
+        /* 컨텐츠 영역 스타일 */
+        .content {
+            width: 80%;
+            max-width: 800px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        button {
+            margin: 10px 0;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #statusMessage {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            margin: 10px 0;
+        }
+
+        /* 비디오 스트림 이미지 스타일 */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>안녕, 호미</h1>
+        
+        <!-- Video Stream -->
+        <img src="{{ url_for('video_feed') }}" width="640" height="480" loading="lazy">
+        <br><br>
+        
+        <!-- Register Face Form -->
+        <form method="POST" action="/register_face">
+            <label for="name">당신의 이름은?:</label>
+            <input type="text" id="name" name="name" required>
+            <button type="submit">얼굴 등록</button>
+        </form>
+        <br>
+        
+        <!-- Toggle Buttons -->
+        <button id="toggleFaceButton" onclick="toggleFeature('face')">가족을 등록하고 보호하세요</button>
+        <button id="toggleFireButton" onclick="toggleFeature('fire')">화재로부터 안전한 우리집</button>
+        <br><br>
+        
+        <!-- Start/Stop Patrol Buttons -->
+        <button id="startPatrolButton" onclick="startPatrol()">집지켜 호미</button>
+        <button id="stopPatrolButton" onclick="stopPatrol()" style="display:none;">순찰 중지</button>
+        
+        <!-- Start ROS Launch Button -->
+        <button id="startRoslaunchButton" onclick="startRoslaunch()">끝까지 따라간다</button>
+        <button id="stopRoslaunchButton" onclick="stopRoslaunch()">좀 쉴게요</button>
+        
+        <div id="statusMessage" style="margin-top: 20px;"></div>
+
+        <!-- Links to Additional Pages -->
+        <br><hr><br>
+        <h2>침입자 너 누구야!!</h2>
+        <ul>
+            <li><a href="{{ url_for('unknown_faces') }}">딱 걸렸어</a></li>
+        </ul>
+    </div>
+
+    <script>
+        // Function to toggle features and update button text
+        function toggleFeature(feature) {
+            fetch('/toggle_' + feature)
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    updateButtonState(feature);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Function to dynamically update button text based on the feature state
+        function updateButtonState(feature) {
+            const featureButton = document.getElementById('toggle' + feature.charAt(0).toUpperCase() + feature.slice(1) + 'Button');
+            if (feature === 'face') {
+                featureButton.textContent = featureButton.textContent.includes("등록") ? "가족 보호 해제" : "가족 등록 및 보호";
+            } else if (feature === 'fire') {
+                featureButton.textContent = featureButton.textContent.includes("안전") ? "화재 감지 해제" : "화재 감지 활성화";
+            }
+        }
+
+        // Function to start patrol
+        function startPatrol() {
+            fetch('/start_patrol', { method: 'POST' })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    document.getElementById('statusMessage').innerText = data;
+                    document.getElementById('startPatrolButton').style.display = 'none';
+                    document.getElementById('stopPatrolButton').style.display = 'inline';
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Function to stop patrol
+        function stopPatrol() {
+            fetch('/stop_patrol', { method: 'POST' })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    document.getElementById('statusMessage').innerText = data;
+                    document.getElementById('startPatrolButton').style.display = 'inline';
+                    document.getElementById('stopPatrolButton').style.display = 'none';
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Function to start ROS Launch
+        function startRoslaunch() {
+            fetch('/start_roslaunch')
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Function to stop ROS Launch
+        function stopRoslaunch() {
+            fetch('/stop_roslaunch')
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // 화재 감지 시 음성 알림 받기
+        function fireAlarm() {
+            fetch('/fire_detected')
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.status);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+
+    </script>
+</body>
+</html>
