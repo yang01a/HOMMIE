@@ -1,0 +1,7 @@
+<launch>
+  <!-- QR 코드 생성 -->
+  <node name="random_qr_generator" pkg="qr_station" type="random_qr_generator.py" output="screen" />
+
+  <!-- QR 코드가 포함된 스테이션 생성 -->
+  <node name="spawn_station_with_qr" pkg="qr_station" type="spawn_station_with_qr.py" output="screen" />
+</launch>

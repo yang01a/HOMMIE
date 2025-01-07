@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="station_with_qr">
+    <static>false</static>
+    <link name="link">
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>1 1 0.5</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>1 1 1 1</ambient>
+          <diffuse>1 1 1 1</diffuse>
+        </material>
+      </visual>
+
+      <!-- QR 코드 텍스처로 사용될 이미지 -->
+      <visual name="qr_visual">
+        <geometry>
+          <box>
+            <size>0.1 0.1 0.01</size>
+          </box>
+        </geometry>
+        <material>
+          <texture>file:///home/opulent/catkin_ws/src/qr_station/textures/qr.png</texture>
+        </material>
+      </visual>
+
+      <!-- pose 값을 직접 설정하거나 동적으로 주입할 수 있도록 설정 -->
+      <pose>5.0 5.0 0.0 0 0 0</pose> <!-- 여기서 XYZ 값을 원하는 값으로 설정 -->
+    </link>
+  </model>
+</sdf>
